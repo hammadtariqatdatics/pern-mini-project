@@ -3,12 +3,22 @@ const router = express.Router();
 const db = require("../../../db/models");
 const createPostSchema = require("./validationSchema");
 const { authHandler } = require("../../middleware/auth");
-const { Post, User } = db;
+const { Post } = db;
+const { Op } = db.Sequelize;
 
 // Retrieve all Posts
 router.get("/", authHandler, async (req, res) => {
+  const { pageSize, pageNumber, title } = req.query;
+  const offset = (pageNumber - 1) * pageSize;
+  const condition = title ? { title: { [Op.like]: `${title}` } } : null;
   try {
-    const data = await Post.findAll();
+    const data = await Post.findAll({
+      include: ["users"],
+      limit: pageSize ? pageSize : null,
+      offset: offset ? offset : null,
+      order: [["id", "ASC"]],
+      where: condition,
+    });
     if (data) {
       res.status(200).send(data);
     } else {

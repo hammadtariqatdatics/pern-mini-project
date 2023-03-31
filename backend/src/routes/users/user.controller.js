@@ -12,11 +12,21 @@ const {
   userSMSVerify,
   resendVerifySMS,
 } = require("../../utils/user.sms");
+const { Op } = db.Sequelize;
 
 // Retrieve all Users
 router.get("/", authHandler, async (req, res) => {
+  const { pageSize, pageNumber, name } = req.query;
+  const offset = (pageNumber - 1) * pageSize;
+  const condition = name ? { name: { [Op.like]: `${name}` } } : null;
   try {
-    const data = await User.findAll({ include: ["posts"] });
+    const data = await User.findAll({
+      include: ["posts"],
+      limit: pageSize ? pageSize : null,
+      offset: offset ? offset : null,
+      order: [["id", "ASC"]],
+      where: condition,
+    });
     if (data) {
       res.status(200).send(data);
     } else {
