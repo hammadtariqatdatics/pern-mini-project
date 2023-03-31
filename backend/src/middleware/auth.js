@@ -14,6 +14,7 @@ const authHandler = (req, res, next) => {
     const token = req.headers.token;
     const isTokenValid = verifyAuthToken(token);
     if (isTokenValid) {
+      req.user = isTokenValid;
       next();
     }
   } catch (error) {
