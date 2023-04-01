@@ -46,7 +46,7 @@ async function resendVerifySMS(phoneNumber) {
   try {
     const otpResponse = await client.verify
       .services(process.env.TWILIO_SERVICE_SID)
-      .verifications.update({
+      .verifications.create({
         to: `${countryCode}${phoneNumber}`,
         channel: "sms",
       });
