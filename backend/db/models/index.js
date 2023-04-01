@@ -50,6 +50,7 @@ db.Sequelize = Sequelize;
 db.User = require("./user")(sequelize, Sequelize);
 db.Post = require("./post")(sequelize, Sequelize);
 
+// Relationship between User And Post Table
 db.User.hasMany(db.Post, { as: "posts" });
 db.Post.belongsTo(db.User, {
   foreignKey: "UserId",

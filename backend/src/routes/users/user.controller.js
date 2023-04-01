@@ -42,7 +42,9 @@ router.get("/", authHandler, async (req, res) => {
 // Retrieve a single User with id
 router.get("/:id", authHandler, async (req, res) => {
   const id = req.params.id;
-  const data = await User.findByPk(id);
+  const data = await User.findByPk(id, {
+    include: ["posts"],
+  });
 
   try {
     if (data) {
