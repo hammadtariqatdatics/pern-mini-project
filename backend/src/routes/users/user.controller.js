@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const db = require("../../../db/models");
-const { createUserSchema, authUserSchema } = require("./validationSchema");
 const { generateAuthToken } = require("../../utils/helpers");
 const { emailHandler, authHandler } = require("../../middleware/auth");
 const { User } = db;
@@ -12,6 +11,10 @@ const {
   userSMSVerify,
   resendVerifySMS,
 } = require("../../utils/user.sms");
+const {
+  validateAuthUserRequestHandler,
+  validateUserRequestHandler,
+} = require("../../middleware/validate");
 const { Op } = db.Sequelize;
 
 // Retrieve all Users
@@ -41,7 +44,7 @@ router.get("/", authHandler, async (req, res) => {
 
 // Retrieve a single User with id
 router.get("/:id", authHandler, async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
   const data = await User.findByPk(id, {
     include: ["posts"],
   });
@@ -63,7 +66,7 @@ router.get("/:id", authHandler, async (req, res) => {
 
 // Update a User with id
 router.put("/:id", authHandler, async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
 
   try {
     const num = await User.update(req.body, {
@@ -88,7 +91,7 @@ router.put("/:id", authHandler, async (req, res) => {
 
 // Delete a User with id
 router.delete("/:id", authHandler, async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
 
   try {
     const num = await User.destroy({
@@ -126,71 +129,65 @@ router.delete("/", authHandler, async (req, res) => {
 });
 
 // Create a new User
-router.post("/register", emailHandler, async (req, res) => {
-  const payload = req.body;
-
-  // Validate request
-  const validatePayload = createUserSchema(payload);
-  const { error } = validatePayload;
-  if (error) {
-    res.status(400).send({ message: error.message });
-    return;
+router.post(
+  "/register",
+  validateUserRequestHandler,
+  emailHandler,
+  async (req, res) => {
+    try {
+      const { name, email, phone, password, userRole } = req.body;
+      // Save User in the database
+      const data = await User.create({
+        name: name,
+        email: email,
+        phone: phone,
+        password: bcrypt.hashSync(password, 8),
+        userRole: userRole,
+      });
+      userSMS(phone);
+      res
+        .status(200)
+        .send({ message: "User registered successfully...", data: data });
+    } catch (error) {
+      res.status(400).send({ message: error.message });
+    }
   }
-  try {
-    // Save User in the database
-    const data = await User.create({
-      name: req.body.name,
-      email: req.body.email,
-      phone: req.body.phone,
-      password: bcrypt.hashSync(req.body.password, 8),
-      userRole: req.body.userRole,
-    });
-    userSMS(req.body.phone);
-    res
-      .status(200)
-      .send({ message: "User registered successfully...", data: data });
-  } catch (error) {
-    res.status(400).send({ message: error.message });
-  }
-});
+);
 
 // Authenticate a User
-router.post("/login", async (req, res, next) => {
-  const payload = req.body;
-
-  // Validate request
-  const validatePayload = authUserSchema(payload);
-  const { error } = validatePayload;
-
-  if (error) {
-    res.status(400).send({ message: error.message });
-    return;
+router.post(
+  "/login",
+  validateAuthUserRequestHandler,
+  async (req, res, next) => {
+    // Authenticate login request
+    return passport.authenticate(
+      "local",
+      { session: false },
+      (error, payload, info) => {
+        if (error) {
+          return next(error);
+        }
+        // console.log(payload);
+        if (payload) {
+          const response = {
+            id: payload.id,
+            email: payload.email,
+            userRole: payload.userRole,
+            token: generateAuthToken(
+              payload.email,
+              payload.id,
+              payload.userRole
+            ),
+          };
+          res.status(200).send({ success: true, data: response });
+          return;
+        } else {
+          return res.status(400).send({ error: true, message: info });
+        }
+      }
+    )(req, res, next);
   }
-
-  // Authenticate login request
-  return passport.authenticate(
-    "local",
-    { session: false },
-    (error, payload, info) => {
-      if (error) {
-        return next(error);
-      }
-      // console.log(payload);
-      if (payload) {
-        const response = {
-          id: payload.id,
-          email: payload.email,
-          userRole: payload.userRole,
-          token: generateAuthToken(payload.email, payload.id, payload.userRole),
-        };
-        res.status(200).send({ success: true, data: response });
-        return;
-      } else {
-        return res.status(400).send({ error: true, message: info });
-      }
-    }
-  )(req, res, next);
-});
+);
 
 // verify OTP
 router.post("/verify-otp", async (req, res) => {

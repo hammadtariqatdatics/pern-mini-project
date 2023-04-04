@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../../../db/models");
-const createPostSchema = require("./validationSchema");
 const { authHandler } = require("../../middleware/auth");
+const { validatePostRequestHandler } = require("../../middleware/validate");
 const { Post } = db;
 const { Op } = db.Sequelize;
 
@@ -19,6 +19,7 @@ router.get("/", authHandler, async (req, res) => {
       order: [["id", "ASC"]],
       where: condition,
     });
+
     if (data) {
       res.status(200).send(data);
     } else {
@@ -33,9 +34,11 @@ router.get("/", authHandler, async (req, res) => {
 
 // Retrieve a single Post with id
 router.get("/:id", authHandler, async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
   try {
-    const data = await Post.findByPk(id);
+    const data = await Post.findByPk(id, {
+      include: ["users"],
+    });
     if (data) {
       res.status(200).send(data);
     } else {
@@ -52,7 +55,7 @@ router.get("/:id", authHandler, async (req, res) => {
 
 // Update a Post with id
 router.put("/:id", authHandler, async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
 
   try {
     const num = await Post.update(req.body, {
@@ -77,7 +80,7 @@ router.put("/:id", authHandler, async (req, res) => {
 
 // Delete a Post with id
 router.delete("/:id", authHandler, async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
 
   try {
     const num = await Post.destroy({
@@ -115,32 +118,29 @@ router.delete("/", authHandler, async (req, res) => {
 });
 
 // Create a new Post
-router.post("/create", authHandler, async (req, res) => {
-  const payload = req.body;
-  console.log(req.user);
-  // Validate request
-  const validatePayload = createPostSchema(payload);
-  const { error } = validatePayload;
-  if (error) {
-    res.status(400).send({ message: error.message });
-    return;
+router.post(
+  "/create",
+  authHandler,
+  validatePostRequestHandler,
+  async (req, res) => {
+    console.log(req.user);
+    try {
+      const { title, content, createdDate, status } = req.body;
+      // Save Post in the database
+      const data = await Post.create({
+        title: title,
+        content: content,
+        createdDate: createdDate,
+        status: status,
+        UserId: req.user.id,
+      });
+      res
+        .status(200)
+        .send({ message: "Post created successfully...", data: data });
+    } catch (error) {
+      res.status(400).send({ message: error.message });
+    }
   }
-
-  try {
-    // Save Post in the database
-    const data = await Post.create({
-      title: req.body.title,
-      content: req.body.content,
-      createdDate: req.body.createdDate,
-      status: req.body.status,
-      UserId: req.user.id,
-    });
-    res
-      .status(200)
-      .send({ message: "Post created successfully...", data: data });
-  } catch (error) {
-    res.status(400).send({ message: error.message });
-  }
-});
+);
 
 module.exports = router;

@@ -4,14 +4,15 @@ const { verifyAuthToken } = require("../utils/helpers");
 
 // middleware for checking token
 const authHandler = (req, res, next) => {
-  if (!req.headers.token) {
+  const { token } = req.headers;
+  if (!token) {
     return res
       .status(400)
-      .send({ message: "Access denied, Auth token is not provided" });
+      .send({ message: "Access denied, authentication token is not provided" });
   }
 
   try {
-    const token = req.headers.token;
+    const { token } = req.headers;
     const isTokenValid = verifyAuthToken(token);
     if (isTokenValid) {
       req.user = isTokenValid;
