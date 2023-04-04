@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const db = require("../../../db/models");
-const { generateAuthToken } = require("../../utils/helpers");
+const { generateAuthToken, refineUserData } = require("../../utils/helpers");
 const { emailHandler, authHandler } = require("../../middleware/auth");
 const { User } = db;
 const passport = require("passport");
@@ -24,7 +24,6 @@ router.get("/", authHandler, async (req, res) => {
   const condition = name ? { name: { [Op.like]: `${name}` } } : null;
   try {
     const data = await User.findAll({
-      include: ["posts"],
       limit: pageSize ? pageSize : null,
       offset: offset ? offset : null,
       order: [["id", "ASC"]],
@@ -45,13 +44,12 @@ router.get("/", authHandler, async (req, res) => {
 // Retrieve a single User with id
 router.get("/:id", authHandler, async (req, res) => {
   const { id } = req.params;
-  const data = await User.findByPk(id, {
-    include: ["posts"],
-  });
-
   try {
-    if (data) {
-      res.status(200).send(data);
+    const data = await User.findByPk(id);
+    const payload = refineUserData(data);
+
+    if (payload) {
+      res.status(200).send(payload);
     } else {
       res.status(400).send({
         message: `Cannot find User with id=${id}.`,

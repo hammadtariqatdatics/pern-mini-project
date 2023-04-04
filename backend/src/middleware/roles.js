@@ -3,7 +3,7 @@ const acl = require("express-acl");
 acl.config({
   filename: "nacl.json",
   baseUrl: "/api",
-  // defaultRole: "user",
+  defaultRole: "user",
   decodedObjectName: "user",
   // roleSearchPath: "user.userRole",
   denyCallback: (res) => {

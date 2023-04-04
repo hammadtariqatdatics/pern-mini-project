@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require("../../../db/models");
 const { authHandler } = require("../../middleware/auth");
 const { validatePostRequestHandler } = require("../../middleware/validate");
+const { refinePostData } = require("../../utils/helpers");
 const { Post } = db;
 const { Op } = db.Sequelize;
 
@@ -39,8 +40,10 @@ router.get("/:id", authHandler, async (req, res) => {
     const data = await Post.findByPk(id, {
       include: ["users"],
     });
-    if (data) {
-      res.status(200).send(data);
+    const payload = refinePostData(data);
+
+    if (payload) {
+      res.status(200).send(payload);
     } else {
       res.status(400).send({
         message: `Cannot find Post with id=${id}.`,
