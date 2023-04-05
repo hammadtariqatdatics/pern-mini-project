@@ -38,26 +38,6 @@
         "action": "allow"
       },
       {
-        "resource": "/users/register",
-        "methods": ["POST"],
-        "action": "allow"
-      },
-      {
-        "resource": "/users/login",
-        "methods": ["POST"],
-        "action": "allow"
-      },
-      {
-        "resource": "/users/verify-otp",
-        "methods": ["POST"],
-        "action": "allow"
-      },
-      {
-        "resource": "/users/resend-otp",
-        "methods": ["POST"],
-        "action": "allow"
-      },
-      {
         "resource": "/posts/create",
         "methods": ["POST"],
         "action": "allow"

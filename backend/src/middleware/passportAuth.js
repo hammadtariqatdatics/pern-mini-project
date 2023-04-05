@@ -25,6 +25,7 @@ passport.use(
         if (!isPasswordValid) {
           return done(null, false, "Invalid email or password");
         }
+      
 
         return done(null, user);
       } catch (error) {
