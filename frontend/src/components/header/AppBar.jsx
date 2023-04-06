@@ -49,7 +49,7 @@ const AppBar = () => {
       >
         <Box sx={{ flex: 1 }} />
         <Link
-          to="/"
+          to="#"
           style={{
             color: "#fff",
             textDecoration: "none",
@@ -92,10 +92,22 @@ const AppBar = () => {
                   textDecoration: "none",
                   fontSize: "18px",
                   textTransform: "uppercase",
-                  marginLeft:"20px"
+                  marginLeft: "20px",
                 }}
               >
                 View Post
+              </Link>
+              <Link
+                to="/view-account"
+                style={{
+                  color: "#fff",
+                  textDecoration: "none",
+                  fontSize: "18px",
+                  textTransform: "uppercase",
+                  marginLeft: "20px",
+                }}
+              >
+                View Account
               </Link>
               <Link
                 to="#"
@@ -114,7 +126,7 @@ const AppBar = () => {
           ) : role === "admin" ? (
             <>
               <Link
-                to="/users"
+                to="/view-users"
                 style={{
                   color: "#fff",
                   textDecoration: "none",
@@ -122,7 +134,19 @@ const AppBar = () => {
                   textTransform: "uppercase",
                 }}
               >
-                Users
+                View Users
+              </Link>
+              <Link
+                to="/view-posts"
+                style={{
+                  color: "#fff",
+                  textDecoration: "none",
+                  fontSize: "18px",
+                  textTransform: "uppercase",
+                  marginLeft: "20px",
+                }}
+              >
+                View Posts
               </Link>
               <Link
                 to="#"

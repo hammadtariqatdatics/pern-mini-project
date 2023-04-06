@@ -15,7 +15,6 @@ http.interceptors.request.use(
     const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
     if (loggedInUser) {
       request.headers["token"] = loggedInUser.token;
-      console.log("token set in headers");
     }
     console.log("request send");
     return request;

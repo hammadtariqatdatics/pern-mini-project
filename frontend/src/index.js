@@ -7,6 +7,7 @@ import { ThemeProvider } from "@mui/material";
 import Theme from "./theme/Theme";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { RoleProvider } from "./context/RoleContext";
+import 'react-toastify/dist/ReactToastify.css';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const queryClient = new QueryClient();

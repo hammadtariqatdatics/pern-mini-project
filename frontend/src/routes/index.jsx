@@ -5,9 +5,11 @@ import HOME_PAGE from "../pages/Home";
 import LOGIN_PAGE from "../pages/Login";
 import SIGNUP_PAGE from "../pages/Signup";
 import VERIFY_OTP_PAGE from "../pages/VerifyOtp";
-import USERS_PAGE from "../pages/Users";
-import CREATE_POST_PAGE from "../pages/CreatePost";
-import VIEW_POST_PAGE from "../pages/ViewPost";
+import VIEW_USERS_PAGE from "../pages/admin/ViewUsers";
+import VIEW_POSTS_PAGE from "../pages/admin/ViewPosts";
+import CREATE_POST_PAGE from "../pages/user/CreatePost";
+import VIEW_POST_PAGE from "../pages/user/ViewPost";
+import VIEW_ACCOUNT_PAGE from "../pages/user/ViewAccount";
 
 const adminRoutes = [
   {
@@ -27,8 +29,12 @@ const adminRoutes = [
         element: <SIGNUP_PAGE />,
       },
       {
-        path: "users",
-        element: <USERS_PAGE />,
+        path: "view-users",
+        element: <VIEW_USERS_PAGE />,
+      },
+      {
+        path: "view-posts",
+        element: <VIEW_POSTS_PAGE />,
       },
       {
         path: "verify-otp",
@@ -74,6 +80,10 @@ const userRoutes = [
       {
         path: "view-post",
         element: <VIEW_POST_PAGE />,
+      },
+      {
+        path: "view-account",
+        element: <VIEW_ACCOUNT_PAGE />,
       },
     ],
   },

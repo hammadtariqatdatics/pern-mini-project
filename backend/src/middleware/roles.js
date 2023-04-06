@@ -3,11 +3,10 @@ const acl = require("express-acl");
 acl.config({
   filename: "nacl.json",
   baseUrl: "/api",
-  // defaultRole: "user",
+  defaultRole: "user",
   decodedObjectName: "user",
-  roleSearchPath: "user.role",
+  roleSearchPath: "user.userRole",
   denyCallback: (res) => {
-    console.log(res);
     return res.status(403).json({
       status: "Access Denied",
       success: false,

@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const db = require("../../../db/models");
 const { generateAuthToken, refineUserData } = require("../../utils/helpers");
-const { emailHandler, authHandler } = require("../../middleware/auth");
+const { emailHandler } = require("../../middleware/auth");
 const { User } = db;
 const passport = require("passport");
 const {
@@ -18,7 +18,7 @@ const {
 const { Op } = db.Sequelize;
 
 // Retrieve all Users
-router.get("/", authHandler, async (req, res) => {
+router.get("/", async (req, res) => {
   const { pageSize, pageNumber, name } = req.query;
   const offset = (pageNumber - 1) * pageSize;
   const condition = name ? { name: { [Op.like]: `${name}` } } : null;
@@ -28,7 +28,9 @@ router.get("/", authHandler, async (req, res) => {
       offset: offset ? offset : null,
       order: [["id", "ASC"]],
       where: condition,
+      attributes: { exclude: ["password", "updatedAt", "createdAt"] },
     });
+
     if (data) {
       res.status(200).send(data);
     } else {
@@ -42,7 +44,7 @@ router.get("/", authHandler, async (req, res) => {
 });
 
 // Retrieve a single User with id
-router.get("/:id", authHandler, async (req, res) => {
+router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const data = await User.findByPk(id);
@@ -63,11 +65,19 @@ router.get("/:id", authHandler, async (req, res) => {
 });
 
 // Update a User with id
-router.put("/:id", authHandler, async (req, res) => {
+router.put("/:id", async (req, res) => {
   const { id } = req.params;
+  const { name, email, phone, password, userRole } = req.body;
+  const updatedUser = {
+    name: name,
+    email: email,
+    phone: phone,
+    password: bcrypt.hashSync(password, 8),
+    userRole: userRole,
+  };
 
   try {
-    const num = await User.update(req.body, {
+    const num = await User.update(updatedUser, {
       where: { id: id },
     });
 
@@ -88,7 +98,7 @@ router.put("/:id", authHandler, async (req, res) => {
 });
 
 // Delete a User with id
-router.delete("/:id", authHandler, async (req, res) => {
+router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -112,7 +122,7 @@ router.delete("/:id", authHandler, async (req, res) => {
 });
 
 // Delete all Users
-router.delete("/", authHandler, async (req, res) => {
+router.delete("/", async (req, res) => {
   try {
     const nums = await User.destroy({
       where: {},

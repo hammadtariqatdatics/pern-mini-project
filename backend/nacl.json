@@ -3,13 +3,8 @@
     "group": "admin",
     "permissions": [
       {
-        "resource": "/posts/*",
-        "methods": ["GET", "POST", "PUT", "DELETE"],
-        "action": "allow"
-      },
-      {
-        "resource": "/users/*",
-        "methods": ["GET", "POST", "PUT", "DELETE"],
+        "resource": "*",
+        "methods": ["GET", "PUT", "POST", "DELETE"],
         "action": "allow"
       }
     ]

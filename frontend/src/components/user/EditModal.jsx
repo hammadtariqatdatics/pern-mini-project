@@ -1,20 +1,39 @@
-import React from "react";
-import { Container, Box, Grid } from "@mui/material";
+import * as React from "react";
+import Modal from "@mui/material/Modal";
+import { Box, Grid, InputAdornment } from "@mui/material";
 import { Form, Formik } from "formik";
-import { createPostSchema } from "../../schemas/Validation";
+// import signUpSchema from "../../schemas/Validation";
 import MuiButton from "../MuiButton";
 import http from "../../utils/Api";
 import CustomTextFields from "../CustomTextFields";
 import { useMutation } from "react-query";
 
-const PostForm = () => {
-  const postData = (payload) => http.post("/posts/create", payload);
-  const { isLoading, mutate } = useMutation(postData, {
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
+
+export default function EditModal({ open, onClose }) {
+  const updateData = (payload) => {
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+    const { id } = loggedInUser;
+    const response = http.put(`/users/${id}`, payload);
+    return response;
+  };
+
+  const { isLoading, mutate } = useMutation(updateData, {
     onSuccess: (successData) => {
-      console.log("Post created succesfully...", successData);
+      console.log("User updated successfully...", successData);
     },
     onError: (Error) => {
-      console.log("Post is not created...", Error);
+      console.log("User is not updated...", Error);
     },
   });
 
@@ -23,17 +42,23 @@ const PostForm = () => {
   };
 
   const initialValues = {
-    title: "",
-    content: "",
-    createdDate: "",
-    status: "pending",
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    userRole: "user",
   };
   return (
-    <Box sx={{ margin: "100px 0px" }}>
-      <Container>
+    <Modal
+      open={open}
+      onClose={onClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box sx={style}>
         <Formik
           initialValues={initialValues}
-          validationSchema={createPostSchema}
+        //   validationSchema={signUpSchema}
           onSubmit={(values, { resetForm }) => {
             handleSubmit(values);
             resetForm({});
@@ -45,12 +70,12 @@ const PostForm = () => {
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                   <CustomTextFields
                     variant="outlined"
-                    label="Title"
+                    label="Name"
                     color="secondary"
                     type="text"
-                    placeholder="Post Title"
-                    name="title"
-                    value={values.title}
+                    placeholder="Your Name"
+                    name="name"
+                    value={values.name}
                     onChange={handleChange}
                     fullWidth="true"
                     onBlur={handleBlur}
@@ -59,12 +84,12 @@ const PostForm = () => {
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                   <CustomTextFields
                     variant="outlined"
-                    label="Content"
+                    label="Email"
                     color="secondary"
-                    type="text"
-                    placeholder="Post content"
-                    name="content"
-                    value={values.content}
+                    type="email"
+                    placeholder="Your Email"
+                    name="email"
+                    value={values.email}
                     onChange={handleChange}
                     fullWidth="true"
                     onBlur={handleBlur}
@@ -73,10 +98,30 @@ const PostForm = () => {
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                   <CustomTextFields
                     variant="outlined"
+                    label="Phone"
                     color="secondary"
-                    type="date"
-                    name="createdDate"
-                    value={values.createdDate}
+                    type="number"
+                    name="phone"
+                    value={values.phone}
+                    onChange={handleChange}
+                    fullWidth="true"
+                    onBlur={handleBlur}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">+92</InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                  <CustomTextFields
+                    variant="outlined"
+                    label="Password"
+                    color="secondary"
+                    type="password"
+                    placeholder="Your Password"
+                    name="password"
+                    value={values.password}
                     onChange={handleChange}
                     fullWidth="true"
                     onBlur={handleBlur}
@@ -85,11 +130,11 @@ const PostForm = () => {
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                   <CustomTextFields
                     variant="outlined"
-                    label="Status"
+                    label="User Role"
                     color="secondary"
                     type="text"
-                    name="status"
-                    value={values.status}
+                    name="userRole"
+                    value={values.userRole}
                     onChange={handleChange}
                     fullWidth="true"
                     onBlur={handleBlur}
@@ -107,15 +152,13 @@ const PostForm = () => {
                   size="large"
                   disabled={isLoading}
                 >
-                  Create
+                  Edit
                 </MuiButton>
               </Box>
             </Form>
           )}
         </Formik>
-      </Container>
-    </Box>
+      </Box>
+    </Modal>
   );
-};
-
-export default PostForm;
+}

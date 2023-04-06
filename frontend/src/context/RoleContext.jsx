@@ -1,11 +1,12 @@
 import React, { useState, createContext, useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const roleContext = createContext();
 
 const RoleProvider = ({ children }) => {
   const [role, setRole] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
 
   const value = {
     role,
@@ -14,9 +15,9 @@ const RoleProvider = ({ children }) => {
 
   useEffect(() => {
     const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
-    // console.log(loggedInUser);
     if (loggedInUser) {
       setRole(loggedInUser.userRole);
+      navigate(location.pathname);
     } else {
       navigate("/");
     }

@@ -1,6 +1,6 @@
 import React from "react";
-import HeroBanner from "../components/hero/HeroBanner";
-import PostForm from "../components/post/PostForm";
+import HeroBanner from "../../components/hero/HeroBanner";
+import PostForm from "../../components/post/PostForm";
 
 const CreatePost = () => {
   return (

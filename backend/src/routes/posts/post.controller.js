@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../../../db/models");
-// const { authHandler } = require("../../middleware/auth");
 const { validatePostRequestHandler } = require("../../middleware/validate");
 const { refinePostData } = require("../../utils/helpers");
 const { Post } = db;
@@ -14,11 +13,13 @@ router.get("/", async (req, res) => {
   const condition = title ? { title: { [Op.like]: `${title}` } } : null;
   try {
     const data = await Post.findAll({
-      include: ["users"],
       limit: pageSize ? pageSize : null,
       offset: offset ? offset : null,
       order: [["id", "ASC"]],
       where: condition,
+      attributes: {
+        exclude: ["updatedAt", "createdAt", "UserId"],
+      },
     });
 
     if (data) {
@@ -37,7 +38,11 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const data = await Post.findByPk(id, {
+    const data = await Post.findOne({
+      where: {
+        UserId: id,
+      },
+      order: [["id", "DESC"]],
       include: ["users"],
     });
     const payload = refinePostData(data);
@@ -122,7 +127,6 @@ router.delete("/", async (req, res) => {
 
 // Create a new Post
 router.post("/create", validatePostRequestHandler, async (req, res) => {
-  // console.log(req.user);
   try {
     const { title, content, createdDate, status } = req.body;
     // Save Post in the database

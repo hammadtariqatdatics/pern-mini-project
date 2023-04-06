@@ -1,6 +1,6 @@
 import React from "react";
-import HeroBanner from "../components/hero/HeroBanner";
-import ViewPostData from "../components/post/ViewPostData";
+import HeroBanner from "../../components/hero/HeroBanner";
+import ViewPostData from "../../components/post/ViewPostData";
 
 const ViewPost = () => {
   return (
