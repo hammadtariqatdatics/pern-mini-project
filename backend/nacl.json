@@ -1,0 +1,42 @@
+[
+  {
+    "group": "admin",
+    "permissions": [
+      {
+        "resource": "*",
+        "methods": ["GET", "PUT", "POST", "DELETE"],
+        "action": "allow"
+      }
+    ]
+  },
+  {
+    "group": "user",
+    "permissions": [
+      {
+        "resource": "/users/:id",
+        "methods": ["GET"],
+        "action": "allow"
+      },
+      {
+        "resource": "/posts/:id",
+        "methods": ["GET"],
+        "action": "allow"
+      },
+      {
+        "resource": "/users/:id",
+        "methods": ["PUT"],
+        "action": "allow"
+      },
+      {
+        "resource": "/posts/:id",
+        "methods": ["PUT"],
+        "action": "allow"
+      },
+      {
+        "resource": "/posts/create",
+        "methods": ["POST"],
+        "action": "allow"
+      }
+    ]
+  }
+]

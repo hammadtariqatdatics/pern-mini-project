@@ -3,12 +3,9 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     email: DataTypes.STRING,
     password: DataTypes.STRING,
-    role: DataTypes.ENUM(["normalUser", "adminUser"]),
+    phone: DataTypes.STRING,
+    userRole: DataTypes.ENUM(["user", "admin"]),
   });
-
-  User.associate = (models) => {
-    User.hasMany(models.Post);
-  };
 
   return User;
 };
