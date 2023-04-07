@@ -4,11 +4,20 @@ const { verifyAuthToken } = require("../utils/helpers");
 
 // middleware for checking token
 const authHandler = (req, res, next) => {
-  const { token } = req.headers;
-  if (!token) {
-    return res
-      .status(400)
-      .send({ message: "Access denied, authentication token is not provided" });
+  if (
+    req.path === "/users/login" ||
+    req.path === "/users/register" ||
+    req.path === "/users/verify-otp" ||
+    req.path === "/users/resend-otp"
+  ) {
+    return next();
+  } else {
+    const { token } = req.headers;
+    if (!token) {
+      return res.status(400).send({
+        message: "Access denied, authentication token is not provided",
+      });
+    }
   }
 
   try {

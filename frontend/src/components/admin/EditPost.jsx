@@ -9,7 +9,7 @@ import CustomTextFields from "../CustomTextFields";
 import { useMutation } from "react-query";
 import { ToastContainer, toast } from "react-toastify";
 
-const EditPost = ({ open, onClose, postId }) => {
+const EditPost = ({ open, onClose, PostId }) => {
   const style = {
     position: "absolute",
     top: "50%",
@@ -22,8 +22,9 @@ const EditPost = ({ open, onClose, postId }) => {
     p: 4,
   };
 
+  // updating post
   const updateData = (payload) => {
-    const response = http.put(`/posts/${postId}`, payload);
+    const response = http.put(`/posts/${PostId}`, payload);
     return response;
   };
 
