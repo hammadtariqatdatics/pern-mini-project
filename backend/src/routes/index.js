@@ -29,7 +29,6 @@ const aclExcludedRoutes = [
 const router = Router();
 
 router.use(authHandler);
-// router.use(acl.authorize)
 router.use(acl.authorize.unless({ path: aclExcludedRoutes }));
 router.use("/users", userRouter);
 router.use("/posts", postRouter);

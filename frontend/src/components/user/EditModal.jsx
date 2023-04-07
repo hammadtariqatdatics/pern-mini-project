@@ -58,7 +58,7 @@ export default function EditModal({ open, onClose }) {
       <Box sx={style}>
         <Formik
           initialValues={initialValues}
-        //   validationSchema={signUpSchema}
+          //   validationSchema={signUpSchema}
           onSubmit={(values, { resetForm }) => {
             handleSubmit(values);
             resetForm({});

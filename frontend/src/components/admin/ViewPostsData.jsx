@@ -15,9 +15,14 @@ import EditPost from "./EditPost";
 
 const ViewPostsData = () => {
   const [openEditModal, setOpenEditModal] = React.useState(false);
-  const handleOpenEditModal = () => setOpenEditModal(true);
+  const [listPostId, setlistPostId] = React.useState(null);
+  const handleOpenEditModal = (postId) => {
+    setlistPostId(postId);
+    setOpenEditModal(true);
+  };
   const handleCloseEditModal = () => setOpenEditModal(false);
 
+  // getting all posts
   const getAllPostsData = () => {
     const response = http.get(`/posts`);
     return response;
@@ -31,6 +36,7 @@ const ViewPostsData = () => {
     },
   });
 
+  // deleting post
   const deleteData = (postId) => {
     const response = http.delete(`/posts/${postId}`);
     return response;
@@ -48,6 +54,7 @@ const ViewPostsData = () => {
   const deletePost = (postId) => {
     mutate(postId);
   };
+
   return (
     <Box sx={{ margin: "100px 0px" }}>
       <Container>
@@ -83,12 +90,12 @@ const ViewPostsData = () => {
                         <Edit
                           color="secondary"
                           sx={{ cursor: "pointer" }}
-                          onClick={handleOpenEditModal}
+                          onClick={() => handleOpenEditModal(id)}
                         />
                         <EditPost
                           open={openEditModal}
                           onClose={handleCloseEditModal}
-                          postId={id}
+                          PostId={listPostId}
                         />
                         <Delete
                           color="secondary"
